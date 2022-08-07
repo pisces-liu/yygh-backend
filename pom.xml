@@ -6,6 +6,7 @@
         <module>model</module>
         <module>service</module>
         <module>mbg</module>
+        <module>common</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
