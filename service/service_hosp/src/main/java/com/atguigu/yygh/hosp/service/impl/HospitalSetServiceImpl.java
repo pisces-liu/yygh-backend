@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
+ * <h1>
  * 医院设置表 服务实现类
- * </p>
+ * </h1>
  *
  * @author Liu-Liu
  * @since 2022-08-07
