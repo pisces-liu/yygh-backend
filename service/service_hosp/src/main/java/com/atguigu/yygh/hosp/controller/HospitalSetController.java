@@ -4,6 +4,7 @@ package com.atguigu.yygh.hosp.controller;
 import com.atguigu.yygh.common.config.result.R;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
 import com.atguigu.yygh.model.hosp.HospitalSet;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,6 +46,19 @@ public class HospitalSetController {
         } else {
             return R.error();
         }
+    }
+
+    /**
+     * @param current 当前页数
+     * @param limit   每页展示数量
+     * @return 返回分页信息
+     */
+    @ApiOperation(value = "获取医院分页信息")
+    @GetMapping("/{current}/{limit}")
+    public R pageList(@PathVariable("current") Integer current, @PathVariable("limit") Integer limit) {
+        Page<HospitalSet> page = new Page<>(current, limit);
+        hospitalSetService.page(page);
+        return R.ok().data("total", page.getTotal()).data("rows", page.getRecords());
     }
 
 }
