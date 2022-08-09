@@ -7,6 +7,7 @@ import com.atguigu.yygh.model.cmn.Dict;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,13 @@ public class DictController {
     @GetMapping("/exportData")
     public void export(HttpServletResponse response) {
         dictService.exportData(response);
+    }
+
+    @ApiOperation("导入数据")
+    @PostMapping("/importData")
+    public R importDictData(MultipartFile multipartFile) {
+        dictService.importDictData(multipartFile);
+        return R.ok();
     }
 }
 

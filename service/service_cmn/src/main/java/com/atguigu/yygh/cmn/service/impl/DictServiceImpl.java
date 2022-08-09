@@ -1,6 +1,7 @@
 package com.atguigu.yygh.cmn.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.atguigu.yygh.cmn.listener.DictListener;
 import com.atguigu.yygh.cmn.mapper.DictMapper;
 import com.atguigu.yygh.cmn.service.DictService;
 import com.atguigu.yygh.model.cmn.Dict;
@@ -9,8 +10,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -26,6 +30,9 @@ import java.util.List;
  */
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
+
+    @Resource
+    private DictListener dictListener;
 
     @Override
     public List<Dict> findChildData(Long id) {
@@ -68,6 +75,15 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
 
 
+    }
+
+    @Override
+    public void importDictData(MultipartFile multipartFile) {
+        try {
+            EasyExcel.read(multipartFile.getInputStream(), DictEeVo.class, dictListener).sheet().doRead();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //判断id下面是否有子节点
