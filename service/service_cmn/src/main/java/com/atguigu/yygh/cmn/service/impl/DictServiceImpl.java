@@ -9,6 +9,7 @@ import com.atguigu.yygh.vo.cmn.DictEeVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Resource
     private DictListener dictListener;
 
+    // 根据数据id查询子数据列表
+    @Cacheable(value = "dict", key = "'selectIndexList'+#id")
     @Override
     public List<Dict> findChildData(Long id) {
         QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
