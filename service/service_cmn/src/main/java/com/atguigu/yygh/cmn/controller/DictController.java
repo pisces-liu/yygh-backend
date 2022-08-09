@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -32,6 +33,12 @@ public class DictController {
     public R findChildData(@PathVariable Long id) {
         List<Dict> list = dictService.findChildData(id);
         return R.ok().data("list", list);
+    }
+
+    @ApiOperation(value = "导出数据")
+    @GetMapping("/exportData")
+    public void export(HttpServletResponse response) {
+        dictService.exportData(response);
     }
 }
 
