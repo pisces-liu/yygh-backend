@@ -1,4 +1,11 @@
 package com.atguigu.yygh.hosp.service;
 
-public interface HospitalService{
+import java.util.Map;
+
+public interface HospitalService {
+
+    /**
+     * 上传医院信息
+     */
+    void save(Map<String, Object> paramMap);
 }

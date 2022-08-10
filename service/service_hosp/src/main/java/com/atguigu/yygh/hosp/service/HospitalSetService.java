@@ -12,5 +12,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-08-07
  */
 public interface HospitalSetService extends IService<HospitalSet> {
-
+    /**
+     * 获取签名key
+     */
+    String getSignKey(String hoscode);
 }
