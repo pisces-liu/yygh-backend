@@ -14,6 +14,7 @@ import java.util.Map;
 @Service
 public class HospitalServiceImpl implements HospitalService {
 
+
     @Resource
     private HospitalRepository hospitalRepository;
 
@@ -43,5 +44,10 @@ public class HospitalServiceImpl implements HospitalService {
             hospitalRepository.save(hospital);
         }
 
+    }
+
+    @Override
+    public Hospital getHospitalByHoscode(String hoscode) {
+        return hospitalRepository.getHospitalByHoscode(hoscode);
     }
 }

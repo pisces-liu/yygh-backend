@@ -6,6 +6,7 @@ import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
 import com.atguigu.yygh.hosp.util.HttpRequestHelper;
 import com.atguigu.yygh.hosp.util.MD5;
+import com.atguigu.yygh.model.hosp.Hospital;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,5 +60,17 @@ public class ApiController {
         return Result.ok();
     }
 
+    @ApiOperation("查询医院")
+    @PostMapping("/hospital/show")
+    public Result hospital(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        // 参数校验
+        String hoscode = (String) paramMap.get("hoscode");
+        if (ObjectUtils.isEmpty(hoscode)) {
+            throw new YyghException(20001, "失败");
+        }
+        Hospital hospitalByHoscode = hospitalService.getHospitalByHoscode(hoscode);
+        return Result.ok(hospitalByHoscode);
+    }
 
 }
