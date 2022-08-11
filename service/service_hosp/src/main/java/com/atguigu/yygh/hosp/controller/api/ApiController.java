@@ -2,12 +2,14 @@ package com.atguigu.yygh.hosp.controller.api;
 
 import com.atguigu.yygh.common.config.exception.YyghException;
 import com.atguigu.yygh.hosp.result.Result;
+import com.atguigu.yygh.hosp.service.DepartmentService;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
 import com.atguigu.yygh.hosp.util.HttpRequestHelper;
 import com.atguigu.yygh.hosp.util.MD5;
 import com.atguigu.yygh.model.hosp.Hospital;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,23 @@ public class ApiController {
 
     @Resource
     private HospitalSetService hospitalSetService;
+
+    @Autowired
+    private DepartmentService departmentService;
+
+    @ApiOperation(value = "上传科室")
+    @PostMapping("saveDepartment")
+    public Result saveDepartment(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        // 参数校验，如果传递的参数没有 hoscode 的话，直接抛出异常
+        String hoscode = (String) paramMap.get("hoscode");
+        if (ObjectUtils.isEmpty(hoscode)) {
+            throw new YyghException(20001, "失败");
+        }
+        departmentService.save(paramMap);
+        return Result.ok();
+    }
+
 
     @ApiOperation(value = "上传医院")
     @PostMapping("/saveHospital")
