@@ -1,11 +1,15 @@
 package com.atguigu.yygh.hosp.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.atguigu.yygh.cmn.client.DictFeignClient;
+import com.atguigu.yygh.enums.DictEnum;
 import com.atguigu.yygh.hosp.repository.HospitalRepository;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.model.hosp.Hospital;
 import com.atguigu.yygh.vo.hosp.HospitalQueryVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +18,15 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class HospitalServiceImpl implements HospitalService {
-
 
     @Resource
     private HospitalRepository hospitalRepository;
+
+    @Resource
+    private DictFeignClient dictFeignClient;
+
 
     @Override
     public void save(Map<String, Object> paramMap) {
@@ -71,8 +79,28 @@ public class HospitalServiceImpl implements HospitalService {
         Example<Hospital> example = Example.of(hospital, matcher);
         Page<Hospital> pages = hospitalRepository.findAll(example, pageable);
 
+        //封装医院等级数据
+        pages.getContent().stream().forEach(item -> {
+            this.packHospital(item);
+        });
+
         return pages;
     }
 
+    /**
+     * 封装数据
+     * @param hospital
+     * @return
+     */
+    private Hospital packHospital(Hospital hospital) {
+        String hostypeString = dictFeignClient.getName(DictEnum.HOSTYPE.getDictCode(),hospital.getHostype());
+        String provinceString = dictFeignClient.getName(hospital.getProvinceCode());
+        String cityString = dictFeignClient.getName(hospital.getCityCode());
+        String districtString = dictFeignClient.getName(hospital.getDistrictCode());
+
+        hospital.getParam().put("hostypeString", hostypeString);
+        hospital.getParam().put("fullAddress", provinceString + cityString + districtString + hospital.getAddress());
+        return hospital;
+    }
 
 }
