@@ -10,8 +10,10 @@ import com.atguigu.yygh.hosp.util.HttpRequestHelper;
 import com.atguigu.yygh.hosp.util.MD5;
 import com.atguigu.yygh.model.hosp.Department;
 import com.atguigu.yygh.model.hosp.Hospital;
+import com.atguigu.yygh.model.hosp.Schedule;
 import com.atguigu.yygh.vo.hosp.DepartmentQueryVo;
 import com.atguigu.yygh.vo.hosp.DepartmentVo;
+import com.atguigu.yygh.vo.hosp.ScheduleQueryVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,27 @@ public class ApiController {
         scheduleService.save(paramMap);
         return Result.ok();
     }
+
+    @ApiOperation(value = "获取排班分页列表")
+    @PostMapping("/schedule/list")
+    public Result scheduleList(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        String hoscode = (String) paramMap.get("hoscode");
+        String depcode = (String) paramMap.get("depcode");
+
+        int page = Integer.parseInt((String) paramMap.get("page"));
+        int limit = Integer.parseInt((String) paramMap.get("limit"));
+
+        ScheduleQueryVo scheduleQueryVo = new ScheduleQueryVo();
+        scheduleQueryVo.setHoscode(hoscode);
+        scheduleQueryVo.setDepcode(depcode);
+
+        Page<Schedule> pageModel = scheduleService.selectPage(page, limit, scheduleQueryVo);
+
+        return Result.ok(pageModel);
+    }
+
 
     // 科室相关接口
     @ApiOperation(value = "删除科室")
