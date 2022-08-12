@@ -76,6 +76,16 @@ public class ApiController {
         return Result.ok(pageModel);
     }
 
+    @ApiOperation(value = "删除排班")
+    @PostMapping("/schedule/remove")
+    public Result removeSchedule(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        String hoscode = (String) paramMap.get("hoscode");
+        String hosScheduleId = (String) paramMap.get("hosScheduleId");
+        scheduleService.remove(hoscode, hosScheduleId);
+        return Result.ok();
+    }
+
 
     // 科室相关接口
     @ApiOperation(value = "删除科室")

@@ -59,4 +59,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleRepository.findAll(example, pageable);
     }
+
+    @Override
+    public void remove(String hoscode, String hosScheduleId) {
+        Schedule schedule = scheduleRepository.getScheduleByHoscodeAndHosScheduleId(hoscode, hosScheduleId);
+
+        scheduleRepository.delete(schedule);
+    }
 }

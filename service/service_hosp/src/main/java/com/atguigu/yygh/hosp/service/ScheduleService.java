@@ -10,4 +10,6 @@ public interface ScheduleService {
     void save(Map<String, Object> paramMap);
 
     Page<Schedule> selectPage(int page, int limit, ScheduleQueryVo scheduleQueryVo);
+
+    void remove(String hoscode, String hosScheduleId);
 }
