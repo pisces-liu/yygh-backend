@@ -24,7 +24,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/cmn/dict")
-@CrossOrigin
 public class DictController {
 
     @Resource

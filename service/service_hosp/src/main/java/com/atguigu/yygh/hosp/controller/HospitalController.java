@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 @Api("医院接口")
 @RestController
 @RequestMapping("/admin/hosp/hospital")
-@CrossOrigin
 public class HospitalController {
 
     @Resource

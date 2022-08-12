@@ -29,7 +29,6 @@ import java.util.Random;
 @Api(tags = "预约设置接口")
 @RestController
 @RequestMapping("/admin/hosp/hospital-set")
-@CrossOrigin
 public class HospitalSetController {
 
     @Resource
