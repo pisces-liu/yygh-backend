@@ -67,5 +67,14 @@ public class DictController {
             @PathVariable("value") String value) {
         return dictService.getNameByParentDictCodeAndValue("", value);
     }
+
+    @ApiOperation(value = "根据dictCode获取下级节点")
+    @GetMapping(value = "/findByDictCode/{dictCode}")
+    public R findByDictCode(
+            @ApiParam(name = "dictCode", value = "节点编码", required = true)
+            @PathVariable String dictCode) {
+        List<Dict> list = dictService.findByDictCode(dictCode);
+        return R.ok().data("list", list);
+    }
 }
 
