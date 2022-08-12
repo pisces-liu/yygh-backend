@@ -5,6 +5,7 @@ import com.atguigu.yygh.hosp.result.Result;
 import com.atguigu.yygh.hosp.service.DepartmentService;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
+import com.atguigu.yygh.hosp.service.ScheduleService;
 import com.atguigu.yygh.hosp.util.HttpRequestHelper;
 import com.atguigu.yygh.hosp.util.MD5;
 import com.atguigu.yygh.model.hosp.Department;
@@ -38,7 +39,22 @@ public class ApiController {
     @Resource
     private DepartmentService departmentService;
 
+    @Resource
+    private ScheduleService scheduleService;
 
+    // 排班相关接口
+    @ApiOperation(value = "上传排班")
+    @PostMapping("/saveSchedule")
+    public Result saveSchedule(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        // TODO 参数校验
+
+        scheduleService.save(paramMap);
+        return Result.ok();
+    }
+
+    // 科室相关接口
     @ApiOperation(value = "删除科室")
     @PostMapping("/department/remove")
     public Result removeDepartment(HttpServletRequest request) {
@@ -88,6 +104,7 @@ public class ApiController {
     }
 
 
+    // 医院相关接口
     @ApiOperation(value = "上传医院")
     @PostMapping("/saveHospital")
     public Result saveHospital(HttpServletRequest request) {
