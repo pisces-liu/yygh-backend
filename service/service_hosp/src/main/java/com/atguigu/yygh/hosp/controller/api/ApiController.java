@@ -7,9 +7,14 @@ import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
 import com.atguigu.yygh.hosp.util.HttpRequestHelper;
 import com.atguigu.yygh.hosp.util.MD5;
+import com.atguigu.yygh.model.hosp.Department;
 import com.atguigu.yygh.model.hosp.Hospital;
+import com.atguigu.yygh.vo.hosp.DepartmentQueryVo;
+import com.atguigu.yygh.vo.hosp.DepartmentVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +34,33 @@ public class ApiController {
     @Resource
     private HospitalSetService hospitalSetService;
 
-    @Autowired
+    @Resource
     private DepartmentService departmentService;
 
+    @ApiOperation(value = "科室分页信息")
+    @PostMapping("/department/list")
+    public Result department(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        String hoscode = (String) paramMap.get("hoscode");
+        String depcode = (String) paramMap.get("depcode");
+
+        // 获取分页信息。page 和 limit 信息，均是 hospital_manage 传递过来的，源 json 数据没有 page 和 limit
+        int page = Integer.parseInt((String) paramMap.get("page"));
+        int limit = Integer.parseInt((String) paramMap.get("limit"));
+
+        DepartmentQueryVo departmentQueryVo = new DepartmentQueryVo();
+        departmentQueryVo.setDepcode(depcode);
+        departmentQueryVo.setHoscode(hoscode);
+
+        Page<Department> pageModel = departmentService.selectPage(page, limit, departmentQueryVo);
+
+        return Result.ok(pageModel);
+
+    }
+
     @ApiOperation(value = "上传科室")
-    @PostMapping("saveDepartment")
+    @PostMapping("/saveDepartment")
     public Result saveDepartment(HttpServletRequest request) {
         Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
         // 参数校验，如果传递的参数没有 hoscode 的话，直接抛出异常
