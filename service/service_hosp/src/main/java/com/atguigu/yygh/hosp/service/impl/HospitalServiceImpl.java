@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -95,6 +96,19 @@ public class HospitalServiceImpl implements HospitalService {
             hospital.setUpdateTime(new Date());
             hospitalRepository.save(hospital);
         }
+    }
+
+    @Override
+    public Map<String, Object> show(String id) {
+        Map<String, Object> result = new HashMap<>();
+        Hospital hospital = this.packHospital(hospitalRepository.findById(id).get());
+        //医院基本信息（包含医院等级）
+        result.put("hospital", hospital);
+        //单独处理更直观
+        result.put("bookingRule", hospital.getBookingRule());
+        //不需要重复返回
+        hospital.setBookingRule(null);
+        return result;
     }
 
     /**

@@ -18,4 +18,6 @@ public interface HospitalService {
     Page<Hospital> selectPage(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo);
 
     void updateStatus(String id, Integer status);
+
+    Object show(String id);
 }

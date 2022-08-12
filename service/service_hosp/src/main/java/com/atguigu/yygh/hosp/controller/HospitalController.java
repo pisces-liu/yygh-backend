@@ -38,4 +38,12 @@ public class HospitalController {
         hospitalService.updateStatus(id, status);
         return R.ok();
     }
+
+    @ApiOperation(value = "获取医院详情")
+    @GetMapping("show/{id}")
+    public R show(
+            @ApiParam(name = "id", value = "医院id", required = true)
+            @PathVariable String id) {
+        return R.ok().data("hospital",hospitalService.show(id));
+    }
 }
