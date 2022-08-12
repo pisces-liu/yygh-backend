@@ -10,4 +10,6 @@ public interface DepartmentService {
     void save(Map<String, Object> paramMap);
 
     Page<Department> selectPage(Integer page, Integer limit, DepartmentQueryVo departmentQueryVo);
+
+    void removeDepartment(String hoscode, String depcode);
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/hosp")
+@SuppressWarnings("all")
 public class ApiController {
 
     @Resource
@@ -36,6 +37,20 @@ public class ApiController {
 
     @Resource
     private DepartmentService departmentService;
+
+
+    @ApiOperation(value = "删除科室")
+    @PostMapping("/department/remove")
+    public Result removeDepartment(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        String hoscode = (String) paramMap.get("hoscode");
+        String depcode = (String) paramMap.get("depcode");
+
+        departmentService.removeDepartment(hoscode, depcode);
+
+        return Result.ok();
+    }
 
     @ApiOperation(value = "科室分页信息")
     @PostMapping("/department/list")

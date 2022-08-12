@@ -50,4 +50,6 @@ public class HospitalServiceImpl implements HospitalService {
     public Hospital getHospitalByHoscode(String hoscode) {
         return hospitalRepository.getHospitalByHoscode(hoscode);
     }
+
+
 }

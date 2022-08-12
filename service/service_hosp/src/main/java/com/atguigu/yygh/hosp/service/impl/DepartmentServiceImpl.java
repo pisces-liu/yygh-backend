@@ -59,8 +59,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 创建实例
         Example<Department> example = Example.of(department, matcher);
 
-        Page<Department> pages = departmentRepository.findAll(example, pageable);
+        return departmentRepository.findAll(example, pageable);
+    }
 
-        return pages;
+    @Override
+    public void removeDepartment(String hoscode, String depcode) {
+        Department department = departmentRepository.getDepartmentByHoscodeAndDepcode(hoscode, depcode);
+        if (null != department) {
+            departmentRepository.delete(department);
+        }
     }
 }
