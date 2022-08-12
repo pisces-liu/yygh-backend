@@ -16,4 +16,6 @@ public interface HospitalService {
     Hospital getHospitalByHoscode(String hoscode);
 
     Page<Hospital> selectPage(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo);
+
+    void updateStatus(String id, Integer status);
 }

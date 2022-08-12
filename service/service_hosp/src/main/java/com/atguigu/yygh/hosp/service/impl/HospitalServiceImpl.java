@@ -87,13 +87,24 @@ public class HospitalServiceImpl implements HospitalService {
         return pages;
     }
 
+    @Override
+    public void updateStatus(String id, Integer status) {
+        if (status.intValue() == 0 || status.intValue() == 1) {
+            Hospital hospital = hospitalRepository.findById(id).get();
+            hospital.setStatus(status);
+            hospital.setUpdateTime(new Date());
+            hospitalRepository.save(hospital);
+        }
+    }
+
     /**
      * 封装数据
+     *
      * @param hospital
      * @return
      */
     private Hospital packHospital(Hospital hospital) {
-        String hostypeString = dictFeignClient.getName(DictEnum.HOSTYPE.getDictCode(),hospital.getHostype());
+        String hostypeString = dictFeignClient.getName(DictEnum.HOSTYPE.getDictCode(), hospital.getHostype());
         String provinceString = dictFeignClient.getName(hospital.getProvinceCode());
         String cityString = dictFeignClient.getName(hospital.getCityCode());
         String districtString = dictFeignClient.getName(hospital.getDistrictCode());
