@@ -6,11 +6,14 @@ import com.atguigu.yygh.cmn.mapper.DictMapper;
 import com.atguigu.yygh.cmn.service.DictService;
 import com.atguigu.yygh.model.cmn.Dict;
 import com.atguigu.yygh.vo.cmn.DictEeVo;
+import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -54,14 +57,12 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
 
     @Override
     public void exportData(HttpServletResponse response) {
-
         try {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和 easyExcel 没有关系
             String fileName = URLEncoder.encode("数据字典", "UTF-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-
             // 获取所有的 dict 列表
             List<Dict> dictList = baseMapper.selectList(null);
             List<DictEeVo> dictEeVoList = new ArrayList<>(dictList.size());
@@ -72,12 +73,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
             }
             // 将 dictEeVoList 写入 excel 中
             EasyExcel.write(response.getOutputStream(), DictEeVo.class).sheet("sheet").doWrite(dictEeVoList);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -89,7 +87,39 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
-    //判断id下面是否有子节点
+    //实现方法
+    @Override
+    public String getNameByParentDictCodeAndValue(String parentDictCode, String value) {
+        //如果value能唯一定位数据字典，parentDictCode可以传空，例如：省市区的value值能够唯一确定
+        if (StringUtils.isEmpty(parentDictCode)) {
+            Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>().eq("value", value));
+            if (null != dict) {
+                return dict.getName();
+            }
+        } else {
+            Dict parentDict = this.getDictByDictCode(parentDictCode);
+            if (null == parentDict) return "";
+            Dict dict =
+                    baseMapper.selectOne(new QueryWrapper<Dict>().eq("parent_id", parentDict.getId()).eq("value", value));
+            if (null != dict) {
+                return dict.getName();
+            }
+        }
+        return "";
+    }
+
+    //实现方法 根据dict_code查询
+    private Dict getDictByDictCode(String dictCode) {
+        QueryWrapper<Dict> wrapper = new QueryWrapper<>();
+        wrapper.eq("dict_code", dictCode);
+        Dict codeDict = baseMapper.selectOne(wrapper);
+        return codeDict;
+    }
+
+
+    /**
+     * 判断id下面是否有子节点
+     */
     public boolean hasChildren(Long id) {
         QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("parent_id", id);
