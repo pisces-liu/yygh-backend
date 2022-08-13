@@ -20,4 +20,7 @@ public interface HospitalService {
     void updateStatus(String id, Integer status);
 
     Object show(String id);
+
+    //定义方法 HospService添加医院编号获取医院名称方法
+    String getHospName(String hoscode);
 }
