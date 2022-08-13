@@ -2,6 +2,7 @@ package com.atguigu.yygh.hosp.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.atguigu.yygh.hosp.repository.ScheduleRepository;
+import com.atguigu.yygh.hosp.service.DepartmentService;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.ScheduleService;
 import com.atguigu.yygh.model.hosp.Hospital;
@@ -36,6 +37,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
     private HospitalService hospitalService;
+
+    @Resource
+    private DepartmentService departmentService;
 
     @Override
     public void save(Map<String, Object> paramMap) {
@@ -100,9 +104,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                         .sum("reservedNumber").as("reservedNumber")
                         .sum("availableNumber").as("availableNumber"),
                 //排序
-                Aggregation.sort(Sort.Direction.ASC,"workDate"),
+                Aggregation.sort(Sort.Direction.ASC, "workDate"),
                 //4 实现分页
-                Aggregation.skip((page-1)*limit),
+                Aggregation.skip((page - 1) * limit),
                 Aggregation.limit(limit)
         );
         //调用方法，最终执行
@@ -121,7 +125,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         int total = totalAggResults.getMappedResults().size();
 
         //把日期对应星期获取
-        for(BookingScheduleRuleVo bookingScheduleRuleVo:bookingScheduleRuleVoList) {
+        for (BookingScheduleRuleVo bookingScheduleRuleVo : bookingScheduleRuleVoList) {
             Date workDate = bookingScheduleRuleVo.getWorkDate();
             String dayOfWeek = this.getDayOfWeek(new DateTime(workDate));
             bookingScheduleRuleVo.setDayOfWeek(dayOfWeek);
@@ -129,20 +133,45 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         //设置最终数据，进行返回
         Map<String, Object> result = new HashMap<>();
-        result.put("bookingScheduleRuleList",bookingScheduleRuleVoList);
-        result.put("total",total);
+        result.put("bookingScheduleRuleList", bookingScheduleRuleVoList);
+        result.put("total", total);
 
         //获取医院名称
         Hospital hospital = hospitalService.getHospitalByHoscode(hoscode);
         //其他基础数据
         Map<String, String> baseMap = new HashMap<>();
-        baseMap.put("hosname",hospital.getHosname());
-        result.put("baseMap",baseMap);
+        baseMap.put("hosname", hospital.getHosname());
+        result.put("baseMap", baseMap);
         return result;
+    }
+
+    //根据医院编号 、科室编号和工作日期，查询排班详细信息
+    @Override
+    public List<Schedule> getDetailSchedule(String hoscode, String depcode, String workDate) {
+        //根据参数查询mongodb
+        List<Schedule> scheduleList =
+                scheduleRepository.findScheduleByHoscodeAndDepcodeAndWorkDate(hoscode, depcode, new DateTime(workDate).toDate());
+        //把得到list集合遍历，向设置其他值：医院名称、科室名称、日期对应星期
+        scheduleList.stream().forEach(item -> {
+            this.packageSchedule(item);
+        });
+        return scheduleList;
+    }
+
+    //封装排班详情其他值 医院名称、科室名称、日期对应星期
+    private void packageSchedule(Schedule schedule) {
+        //设置医院名称
+        schedule.getParam().put("hosname", hospitalService.getHospName(schedule.getHoscode()));
+        //设置科室名称
+        schedule.getParam().put("depname",
+                departmentService.getDepName(schedule.getHoscode(), schedule.getDepcode()));
+        //设置日期对应星期
+        schedule.getParam().put("dayOfWeek", this.getDayOfWeek(new DateTime(schedule.getWorkDate())));
     }
 
     /**
      * 根据日期获取周几数据
+     *
      * @param dateTime
      * @return
      */
