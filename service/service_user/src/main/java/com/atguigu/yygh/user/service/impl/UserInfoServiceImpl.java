@@ -1,10 +1,19 @@
 package com.atguigu.yygh.user.service.impl;
 
+import com.atguigu.yygh.common.config.exception.YyghException;
+import com.atguigu.yygh.model.acl.User;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.user.mapper.UserInfoMapper;
 import com.atguigu.yygh.user.service.UserInfoService;
+import com.atguigu.yygh.vo.user.LoginVo;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,4 +26,58 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
+    @Override
+    public Map<String, Object> login(LoginVo loginVo) {
+        // 获取用户手机号
+        String phone = loginVo.getPhone();
+        // 获取用户验证码
+        String code = loginVo.getCode();
+
+        // 校验参数
+        if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(code)) {
+            throw new YyghException(20001, "数据为空");
+        }
+
+        // TODO 使用 redis 校验验证码
+
+        // 查询数据库，判断用户是否为新用户
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+
+        UserInfo userInfo = baseMapper.selectOne(queryWrapper);
+
+        // 对用户进行判断是否为空
+        if (null == userInfo) {
+            // 如果用户为空，则进行增加操作
+            userInfo = new UserInfo();
+            userInfo.setName("");
+            userInfo.setPhone(phone);
+            userInfo.setCreateTime(new Date());
+            userInfo.setStatus(1);
+            this.save(userInfo);
+        }
+
+        // 当用户已存在时，进行用户状态校验
+        if (userInfo.getStatus() == 0) {
+            throw new YyghException(20001, "用户已被禁用");
+        }
+        // 返回用户信息
+        HashMap<String, Object> info = new HashMap<>();
+
+        // 如果 name 为空的话，就将 nickName 作为 name 进行返回
+        String name = userInfo.getName();
+        if (StringUtils.isEmpty(name)) {
+            name = userInfo.getNickName();
+        }
+
+        // 如果 name 为空的话，就将 phone 作为 name 进行返回
+        if (StringUtils.isEmpty(name)) {
+            name = userInfo.getPhone();
+        }
+
+        info.put("name", name);
+        info.put("token", "");
+
+        return info;
+    }
 }
