@@ -9,6 +9,8 @@ import com.atguigu.yygh.user.util.JwtHelper;
 import com.atguigu.yygh.vo.user.LoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +29,10 @@ import java.util.Map;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     @Override
     public Map<String, Object> login(LoginVo loginVo) {
         // 获取用户手机号
@@ -40,6 +46,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
 
         // TODO 使用 redis 校验验证码
+        String redisCode = redisTemplate.opsForValue().get(phone);
+        if (code.equals(redisCode)) {
+            throw new YyghException(20001, "验证码不正确");
+        }
 
         // 查询数据库，判断用户是否为新用户
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();

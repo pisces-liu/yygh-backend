@@ -6,6 +6,7 @@ import com.atguigu.msmservice.util.RandomUtil;
 import org.apache.http.HttpResponse;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -20,6 +21,9 @@ public class MsmServiceImpl implements MsmService {
 
     @Override
     public boolean sendCode(String phone) {
+        // 从 redis 中查询 验证码，避免多次发送验证码
+        String code = redisTemplate.opsForValue().get(phone);
+        if(!StringUtils.isEmpty(code)) return true;
 
         String host = "http://dingxintz.market.alicloudapi.com";
         String path = "/dx/notifySms";
@@ -32,7 +36,7 @@ public class MsmServiceImpl implements MsmService {
         Map<String, String> querys = new HashMap<String, String>();
         querys.put("mobile", phone);
         // 生成验证码
-        String code = RandomUtil.getFourBitRandom();
+        code = RandomUtil.getFourBitRandom();
 
         querys.put("param", "code:" + code);
         querys.put("tpl_id", "TP18040315");
