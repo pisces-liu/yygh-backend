@@ -5,6 +5,7 @@ import com.atguigu.yygh.model.acl.User;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.user.mapper.UserInfoMapper;
 import com.atguigu.yygh.user.service.UserInfoService;
+import com.atguigu.yygh.user.util.JwtHelper;
 import com.atguigu.yygh.vo.user.LoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -76,7 +77,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
 
         info.put("name", name);
-        info.put("token", "");
+        // JWT 生成 token 字符串。数据库中 id 字段类型为 bigint 自增
+        String token = JwtHelper.createToken(userInfo.getId(), name);
+        info.put("token", token);
 
         return info;
     }
