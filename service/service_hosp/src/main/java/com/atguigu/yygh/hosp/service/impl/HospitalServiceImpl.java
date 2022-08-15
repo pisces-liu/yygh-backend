@@ -144,4 +144,17 @@ public class HospitalServiceImpl implements HospitalService {
         return hospitalRepository.findHospitalByHosnameLike(hosname);
     }
 
+    @Override
+    public Map<String, Object> item(String hoscode) {
+        HashMap<String, Object> result = new HashMap<>();
+        // 获取医院详情
+        Hospital hospital = this.packHospital(this.getHospitalByHoscode(hoscode));
+        result.put("hospital", hospital);
+        // 存储医院预约规则信息
+        result.put("bookingRule", hospital.getBookingRule());
+        //不需要重复返回
+        hospital.setBookingRule(null);
+        return result;
+    }
+
 }
