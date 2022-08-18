@@ -39,7 +39,7 @@ public class MsmServiceImpl implements MsmService {
         code = RandomUtil.getFourBitRandom();
 
         querys.put("param", "code:" + code);
-        querys.put("tpl_id", "TP18040315");
+        querys.put("tpl_id", "TP1711063");
 
         Map<String, String> bodys = new HashMap<String, String>();
 
