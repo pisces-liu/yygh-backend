@@ -23,7 +23,7 @@ import java.util.Map;
  * @since 2022-08-15
  */
 @RestController
-@RequestMapping("/user/userinfo")
+@RequestMapping("/api/userinfo")
 public class UserInfoController {
 
     @Resource
