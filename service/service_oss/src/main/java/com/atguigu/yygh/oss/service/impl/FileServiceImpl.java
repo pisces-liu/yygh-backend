@@ -33,7 +33,7 @@ public class FileServiceImpl implements FileService {
             String filename = file.getOriginalFilename();
             // 使用 UUID 生成唯一ID，避免上传的文件重名
             String uuid = UUID.randomUUID().toString().replace("-", "");
-            filename = filename + uuid;
+            filename = uuid + filename;
             // 按照当前日前，创建文件夹，上传到指定文件夹里面
             String timeUrl = new DateTime().toString("yyyy/MM/dd");
             filename = timeUrl + "/" + filename;
