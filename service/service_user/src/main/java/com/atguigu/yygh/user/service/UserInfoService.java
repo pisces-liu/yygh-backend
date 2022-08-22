@@ -47,4 +47,11 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param status 用户状态
      */
     void lock(Long userId, Integer status);
+
+    /**
+     * 展示用户详细信息
+     * @param userId 用户 id
+     * @return 返回 map 集合
+     */
+    Map<String, Object> show(Long userId);
 }

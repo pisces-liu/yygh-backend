@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/userinfo")
@@ -36,5 +37,12 @@ public class UserController {
     public R lock(@PathVariable("userId") Long userId, @PathVariable("status") Integer status) {
         userInfoService.lock(userId, status);
         return R.ok();
+    }
+
+    // 显示用户详情功能
+    @GetMapping("/show/{userId}")
+    public R show(@PathVariable("userId") Long userId) {
+        Map<String, Object> map = userInfoService.show(userId);
+        return R.ok().data(map);
     }
 }

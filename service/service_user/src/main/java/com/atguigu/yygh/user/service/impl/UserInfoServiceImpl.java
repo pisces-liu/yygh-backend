@@ -3,8 +3,10 @@ package com.atguigu.yygh.user.service.impl;
 import com.atguigu.yygh.common.config.exception.YyghException;
 import com.atguigu.yygh.enums.AuthStatusEnum;
 import com.atguigu.yygh.model.acl.User;
+import com.atguigu.yygh.model.user.Patient;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.user.mapper.UserInfoMapper;
+import com.atguigu.yygh.user.service.PatientService;
 import com.atguigu.yygh.user.service.UserInfoService;
 import com.atguigu.yygh.user.util.JwtHelper;
 import com.atguigu.yygh.vo.user.LoginVo;
@@ -20,8 +22,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +43,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
+    @Resource
+    private PatientService patientService;
 
     @Override
     public Map<String, Object> login(LoginVo loginVo) {
@@ -218,6 +225,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userInfo.setStatus(status);
             this.updateById(userInfo);
         }
+    }
+
+    @Override
+    public Map<String, Object> show(Long userId) {
+        HashMap<String, Object> map = new HashMap<>();
+        // 根据 userid 查询用户信息
+        UserInfo userInfo = this.packageUserInfo(baseMapper.selectById(userId));
+        map.put("userInfo", userInfo);
+        // 根据 userId 查询该用户下所有的预约就诊人信息
+        List<Patient> patientList = patientService.findAllPatientByUserId(userId);
+        map.put("patientList", patientList);
+        return map;
     }
 
     //编号变成对应值封装
