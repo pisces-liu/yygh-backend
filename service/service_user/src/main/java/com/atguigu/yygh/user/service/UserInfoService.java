@@ -40,4 +40,11 @@ public interface UserInfoService extends IService<UserInfo> {
      * @return 返回分页对象
      */
     IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo);
+
+    /**
+     * 锁定用户功能
+     * @param userId 用户id
+     * @param status 用户状态
+     */
+    void lock(Long userId, Integer status);
 }

@@ -30,4 +30,11 @@ public class UserController {
         IPage<UserInfo> pageModel = userInfoService.selectPage(pageParam, userInfoQueryVo);
         return R.ok().data("pageModel", pageModel);
     }
+
+    // 锁定用户功能
+    @GetMapping("/lock/{userId}/{status}")
+    public R lock(@PathVariable("userId") Long userId, @PathVariable("status") Integer status) {
+        userInfoService.lock(userId, status);
+        return R.ok();
+    }
 }

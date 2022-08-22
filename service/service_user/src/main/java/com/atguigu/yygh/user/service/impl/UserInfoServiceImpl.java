@@ -211,6 +211,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return pages;
     }
 
+    @Override
+    public void lock(Long userId, Integer status) {
+        if (status.intValue() == 0 || status.intValue() == 1) {
+            UserInfo userInfo = this.getById(userId);
+            userInfo.setStatus(status);
+            this.updateById(userInfo);
+        }
+    }
+
     //编号变成对应值封装
     private UserInfo packageUserInfo(UserInfo userInfo) {
         //处理认证状态编码
