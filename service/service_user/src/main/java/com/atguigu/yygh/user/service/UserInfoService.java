@@ -3,6 +3,9 @@ package com.atguigu.yygh.user.service;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.vo.user.LoginVo;
 import com.atguigu.yygh.vo.user.UserAuthVo;
+import com.atguigu.yygh.vo.user.UserInfoQueryVo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
@@ -29,4 +32,12 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param userAuthVo 用户认证信息
      */
     void userAuth(Long userId, UserAuthVo userAuthVo);
+
+    /**
+     * 带条件分页信息查询
+     * @param pageParam 分页信息，含当前页，每页展示数量
+     * @param userInfoQueryVo 查询参数携带
+     * @return 返回分页对象
+     */
+    IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo);
 }
