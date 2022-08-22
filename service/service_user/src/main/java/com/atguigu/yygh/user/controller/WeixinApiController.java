@@ -1,4 +1,4 @@
-package com.atguigu.yygh.user.controller.api;
+package com.atguigu.yygh.user.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.atguigu.yygh.common.config.result.R;
@@ -28,16 +28,17 @@ public class WeixinApiController {
 
     @Resource
     private UserInfoService userInfoService;
+
     @Resource
     private RedisTemplate redisTemplate;
 
 
     @GetMapping("/callback")
     public String callBack(String code, String state) {
-        System.out.println("state = " + state);
+        // System.out.println("state = " + state);
 
         // 1. 获取临时票据 code
-        System.out.println("code:" + code);
+        // System.out.println("code:" + code);
 
         // 2. 拿着 code 和微信 id 和秘钥，请求微信固定地址，得到两个值。使用 code 和 appid 以及 app_secret 获取 access_token
         // %s 占位符

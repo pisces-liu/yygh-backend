@@ -165,10 +165,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public void userAuth(Long userId, UserAuthVo userAuthVo) {
         UserInfo userInfo = baseMapper.selectById(userId);
         // 对用户数据进行更新
-        userInfo.setName(userInfo.getName());
-        userInfo.setCertificatesType(userInfo.getCertificatesType());
-        userInfo.setCertificatesNo(userInfo.getCertificatesNo());
-        userInfo.setCertificatesUrl(userInfo.getCertificatesUrl());
+        userInfo.setName(userAuthVo.getName());
+        userInfo.setCertificatesType(userAuthVo.getCertificatesType());
+        userInfo.setCertificatesNo(userAuthVo.getCertificatesNo());
+        userInfo.setCertificatesUrl(userAuthVo.getCertificatesUrl());
         userInfo.setAuthStatus(AuthStatusEnum.AUTH_RUN.getStatus());
         // 对数据进行更新
         baseMapper.updateById(userInfo);
