@@ -1,12 +1,14 @@
 package com.atguigu.yygh.user.service.impl;
 
 import com.atguigu.yygh.common.config.exception.YyghException;
+import com.atguigu.yygh.enums.AuthStatusEnum;
 import com.atguigu.yygh.model.acl.User;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.user.mapper.UserInfoMapper;
 import com.atguigu.yygh.user.service.UserInfoService;
 import com.atguigu.yygh.user.util.JwtHelper;
 import com.atguigu.yygh.vo.user.LoginVo;
+import com.atguigu.yygh.vo.user.UserAuthVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +30,7 @@ import java.util.Map;
  * @since 2022-08-15
  */
 @Service
+@SuppressWarnings("all")
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
 
@@ -48,6 +51,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         // 验证码校验 输入的验证码 和 存储redis验证码比对
         String redisCode = redisTemplate.opsForValue().get(phone);
+        assert redisCode != null;
         if (!redisCode.equals(code)) {
             throw new YyghException(20001, "验证码校验失败");
         }
@@ -55,7 +59,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         // 获取用户 openid
         String openid = loginVo.getOpenid();
         // 创建 map 对象，存储用户信息
-        HashMap<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         // 判断用户是否含有 openid，也就是判断用户是否进行过微信登录
         if (StringUtils.isEmpty(openid)) {
             /*
@@ -154,5 +158,19 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("openid", openid);
         return baseMapper.selectOne(queryWrapper);
+    }
+
+    // 用户认证
+    @Override
+    public void userAuth(Long userId, UserAuthVo userAuthVo) {
+        UserInfo userInfo = baseMapper.selectById(userId);
+        // 对用户数据进行更新
+        userInfo.setName(userInfo.getName());
+        userInfo.setCertificatesType(userInfo.getCertificatesType());
+        userInfo.setCertificatesNo(userInfo.getCertificatesNo());
+        userInfo.setCertificatesUrl(userInfo.getCertificatesUrl());
+        userInfo.setAuthStatus(AuthStatusEnum.AUTH_RUN.getStatus());
+        // 对数据进行更新
+        baseMapper.updateById(userInfo);
     }
 }

@@ -2,16 +2,16 @@ package com.atguigu.yygh.user.controller;
 
 
 import com.atguigu.yygh.common.config.result.R;
+import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.user.service.UserInfoService;
+import com.atguigu.yygh.user.util.AuthContextHolder;
 import com.atguigu.yygh.vo.user.LoginVo;
+import com.atguigu.yygh.vo.user.UserAuthVo;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -36,6 +36,25 @@ public class UserInfoController {
         // 登录成功之后，返回一些用户信息，例如用户名，头像等。讲这些信息封装到 map 中。
         Map<String, Object> info = userInfoService.login(loginVo);
         return R.ok().data(info);
+    }
+
+    // 用户认证接口
+    @PostMapping("/auth/userAuth")
+    public R userAuth(@RequestBody UserAuthVo userAuthVo, HttpServletRequest request) {
+        // 传递两个参数，第一个参数用户id，第二个参数认证数据 vo 对象
+        userInfoService.userAuth(AuthContextHolder.getUserId(request), userAuthVo);
+        return R.ok();
+    }
+
+    // 获取用户 id 信息接口
+    @GetMapping("/auth/getUserInfo")
+    public R getUserInfo(HttpServletRequest request) {
+        // 通过 AuthContextHolder 根据类获取用户 id
+        Long userId = AuthContextHolder.getUserId(request);
+        // 通过用户 id 查询用户信息
+        UserInfo userInfo = userInfoService.getById(userId);
+        // 将用户信息进行返回
+        return R.ok().data("userInfo", userInfo);
     }
 
 
